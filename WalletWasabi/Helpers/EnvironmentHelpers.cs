@@ -43,15 +43,24 @@ public static class EnvironmentHelpers
 		}
 		else
 		{
-			var localAppData = Environment.GetEnvironmentVariable("APPDATA");
-			if (!string.IsNullOrEmpty(localAppData))
+			var customHome = Environment.GetEnvironmentVariable("WASABI_HOME");
+			if (!string.IsNullOrEmpty(customHome))
 			{
-				directory = Path.Combine(localAppData, appName);
-				Logger.LogInfo($"Using APPDATA environment variable for initializing application data at `{directory}`.");
+				directory = Path.Combine(customHome, "." + appName.ToLowerInvariant());
+				Logger.LogInfo($"Using WASABI_HOME environment variable for initializing application data at `{directory}`.");
 			}
 			else
 			{
-				throw new DirectoryNotFoundException("Could not find suitable datadir.");
+				var localAppData = Environment.GetEnvironmentVariable("APPDATA");
+				if (!string.IsNullOrEmpty(localAppData))
+				{
+					directory = Path.Combine(localAppData, appName);
+					Logger.LogInfo($"Using APPDATA environment variable for initializing application data at `{directory}`.");
+				}
+				else
+				{
+					throw new DirectoryNotFoundException("Could not find suitable datadir.");
+				}
 			}
 		}
 
